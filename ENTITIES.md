@@ -1,74 +1,68 @@
 # Описание сущностей
 (имя поля, тип, ограничения, связь с другими сущностями)
 
-## Клиент (Client)
+## Пользователь (User)
 |имя поля | тип | ограничения | описание |
 |:---:|:---:|:---:|:---:|
 | id | pk | auto increment; not null; unique | первичный ключ |
-| first_name | VARCHAR(50) | not null | имя |
-| last_name | VARCHAR(50) | not null | фамилия |
-| birth_date | DATE | blank=True | дата рождения |
+| username | VARCHAR(50) | not null; unique | имя пользователя |
+| password | VARCHAR(255) | not null | пароль |
+| email | VARCHAR(100) | blank=True | эл почта |
 | telephone | VARCHAR(10) | blank=True, unique | номер телефона |
-| passport_id | VARCHAR(10) | not null, unique | id пасспорта |
-| family | ForeignKey(Family) | not null | сеья к которой клиент относиться |
-## Семья (Family)
+| is_blocked | BOOLEAN | not null | заблокирован ли пользователь |
+## Страница Пользователя (Page)
 |имя поля | тип | ограничения | описание |
 |:---:|:---:|:---:|:---:|
 | id | pk | auto increment; not null; unique | первичный ключ |
-| room | ForeignKey(Room) | not null | комната клиента (у нескольких клиентов может быть одна комната) |
-| guide | ForeignKey(Guide) | not null | гид клиента |
-| tours | ManyToMany(Tour) | not null | экскурсии которые купила семья (покупается на всю семью, а не на одного клиента) |
-## Комната (Room)
+| owner | OneToOneField(User) | not null | пользователь к которому прикреплена эта страница |
+| followers | ForeignKey(Room) | not null | подписчики страницы |
+| unblock_date | DATE | - | дата разблокировки страницы |
+## Пост (Post)
 |имя поля | тип | ограничения | описание |
 |:---:|:---:|:---:|:---:|
 | id | pk | auto increment; not null; unique | первичный ключ |
-| card | fk | not null | внешний ключ на карту клиента |
-| floor | INTEGER | not null | этаж комнаты |
-| beds | INTEGER | not null | количесво кроватей |
-| number | INTEGER | not null | номер комнаты |
-| price | DECIMAL | not null | цена комнаты |
-| isMiniBar | BOOLEAN | not null | есть ли минибар |
-| date_enter | DATE | not null | дата занятия комнаты |
-| date_leave | DATE | not null | дата освобождения комнаты |
-## Карточка (Card)
+| title | VARCHAR(100) | not null | заголовок поста |
+| likes | ForeignKey(User) | - | пользователи которые лайкнули пост |
+| image_url | VARCHAR(255) | - | ссылка s3 на изображение |
+| tag | ForeignKey(Tag) | not null | тег поста (тематика) |
+| page | ForeignKey(Page) | not null | страница пользователя который создал пост |
+| community | ForeignKey(Community) | not null | сообщество которое создало пост |
+| repost | ForeignKey(Post) | not null | пост который репостит этот пост |
+| date_created | DATE | not null | дата создания поста |
+## Сообщество (Community)
 |имя поля | тип | ограничения | описание |
 |:---:|:---:|:---:|:---:|
 | id | pk | auto increment; not null; unique | первичный ключ |
-| number | VARCHAR(16) | not null | ФИО пользователя |
-| room | OneToOneField(Room) | not null | комната карточки |
-## Гид (Guide)
+| name | VARCHAR(50) | not null | название сообщества |
+| admins | ManyToMany(User) | not null | администраторы сообщества |
+| followers | ForeignKey(User) | not null | подписчики сообщества |
+| category | ForeignKey(Category) | not null | категория сообщества |
+| date_created | DATE | not null | дата создания сообщества |
+| is_blocked | BOOLEAN | not null | заблокировано ли сообщество |
+| unblock_date | DATE | - | дата разблокировки сообщества |
+## Комментарий (Comment)
 |имя поля | тип | ограничения | описание |
 |:---:|:---:|:---:|:---:|
 | id | pk | auto increment; not null; unique | первичный ключ |
-| first_name | VARCHAR(50) | not null | имя гида |
-| last_name | VARCHAR(50) | not null | фамилия гида |
-| experience | INTEGER | not null | профессиональный опыт гида (в годах) |
-| isFree | BOOLEAN | not null | свободен ли гид для новый семей |
-## Экскурсия (Tour)
+| content | VARCHAR(255) | not null | текстовый контент поста |
+| image_url | VARCHAR(255) | - | ссылка s3 на изображение |
+| valuable | ForeignKey(User) | - | пользователи которые посчитали коммент ценным |
+| nonvaluable | ForeignKey(User) | - | пользователи которые посчитали коммент неценным |
+| user | ForeignKey(User) | not null | пользователь который написал комент |
+| post | ForeignKey(Post) | not null | пост под которым написан комент |
+| reply_to | ForeignKey(Comment) | - | комент к которому прикреплен данный комент |
+| date_created | DATE | not null | дата создания коммента |
+| date_edited | DATE | - | дата последнего редактирования комента |
+## Тег (Tag)
 |имя поля | тип | ограничения | описание |
 |:---:|:---:|:---:|:---:|
 | id | pk | auto increment; not null; unique | первичный ключ |
-| title | VARCHAR(50) | not null | название экскурсии |
-| places | VARCHAR(255) | not null | места которые будут посещены |
-| price | INTEGER | not null | стоимость экскурсии для одной семьи |
-| clients_amount | INTEGER | - | количество клиентов которые купили экскурсию |
-| is_closed | BOOLEAN | - | открыта ли экскурсия, или она уже прошла |
-| date_start | DATE | not null | дата начала экскурсии (день:час) |
-| date_end | DATE | not null | дата конца экскурсии (день:час) |
-## Абонемент Сауна (Sauna)
+| title | VARCHAR(100) | not null | название тега |
+## Категория (Category)
 |имя поля | тип | ограничения | описание |
 |:---:|:---:|:---:|:---:|
 | id | pk | auto increment; not null; unique | первичный ключ |
-| name | VARCHAR(128) | not null | ФИО пользователя |
-| post | VARCHAR(50) | not null | занимаемая должность |
-| department | fk | not null | отделение клиники |
-| experience | int | not null | опыт работы |
-## Отделения (Departments)
-|имя поля | тип | ограничения | описание |
-|:---:|:---:|:---:|:---:|
-| id | pk | auto increment; not null; unique | первичный ключ |
-| name | VARCHAR(128) | not null | название отделения |
-address | VARCHAR(128) | not null | адрес отделения |
+| title | VARCHAR(100) | not null | название категории |
 ## Роли (Roles)
 |имя поля | тип | ограничения | описание |
 |:---:|:---:|:---:|:---:|
@@ -79,6 +73,6 @@ address | VARCHAR(128) | not null | адрес отделения |
 |имя поля | тип | ограничения | описание |
 |:---:|:---:|:---:|:---:|
 | id | pk | auto increment; not null; unique | первичный ключ |
-| user | fk | not null | внешний ключ на пользователя |
+| user | ForeignKey(User) | not null | внешний ключ на пользователя |
 | type | VARCHAR(50) | not null | тип лога(CREATE/UPDATE/DELETE) |
 | representation | VARCHAR(255) | not null | строковое представление изменённого кортежа |
