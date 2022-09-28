@@ -15,7 +15,7 @@
 |:---:|:---:|:---:|:---:|
 | id | pk | auto increment; not null; unique | первичный ключ |
 | owner | OneToOneField(User) | not null | пользователь к которому прикреплена эта страница |
-| followers | ForeignKey(Room) | not null | подписчики страницы |
+| followers | ForeignKey(User) | not null | подписчики страницы |
 | unblock_date | DATE | - | дата разблокировки страницы |
 ## Пост (Post)
 |имя поля | тип | ограничения | описание |
@@ -46,8 +46,7 @@
 | id | pk | auto increment; not null; unique | первичный ключ |
 | content | VARCHAR(255) | not null | текстовый контент поста |
 | image_url | VARCHAR(255) | - | ссылка s3 на изображение |
-| valuable | ForeignKey(User) | - | пользователи которые посчитали коммент ценным |
-| nonvaluable | ForeignKey(User) | - | пользователи которые посчитали коммент неценным |
+| likes | ForeignKey(User) | - | пользователи которые посчитали коммент ценным |
 | user | ForeignKey(User) | not null | пользователь который написал комент |
 | post | ForeignKey(Post) | not null | пост под которым написан комент |
 | reply_to | ForeignKey(Comment) | - | комент к которому прикреплен данный комент |
