@@ -9,22 +9,21 @@
 | password | VARCHAR(255) | not null | пароль |
 | email | VARCHAR(100) | blank=True | эл почта |
 | telephone | VARCHAR(10) | blank=True, unique | номер телефона |
-| is_blocked | BOOLEAN | not null | заблокирован ли пользователь |
+| unblock_date | DATE | - | дата разблокировки пользователя |
 ## Страница Пользователя (Page)
 |имя поля | тип | ограничения | описание |
 |:---:|:---:|:---:|:---:|
 | id | pk | auto increment; not null; unique | первичный ключ |
 | owner | OneToOneField(User) | not null | пользователь к которому прикреплена эта страница |
-| followers | ForeignKey(User) | not null | подписчики страницы |
-| unblock_date | DATE | - | дата разблокировки страницы |
+| followers | ManyToMany(User) | not null | подписчики страницы |
 ## Пост (Post)
 |имя поля | тип | ограничения | описание |
 |:---:|:---:|:---:|:---:|
 | id | pk | auto increment; not null; unique | первичный ключ |
 | title | VARCHAR(100) | not null | заголовок поста |
-| likes | ForeignKey(User) | - | пользователи которые лайкнули пост |
+| likes | ManyToMany(User) | - | пользователи которые лайкнули пост |
 | image_url | VARCHAR(255) | - | ссылка s3 на изображение |
-| tag | ForeignKey(Tag) | not null | тег поста (тематика) |
+| tag | ManyToMany(Tag) | not null | тег поста (тематика) |
 | page | ForeignKey(Page) | not null | страница пользователя который создал пост |
 | community | ForeignKey(Community) | not null | сообщество которое создало пост |
 | repost | ForeignKey(Post) | not null | пост который репостит этот пост |
@@ -35,10 +34,9 @@
 | id | pk | auto increment; not null; unique | первичный ключ |
 | name | VARCHAR(50) | not null | название сообщества |
 | admins | ManyToMany(User) | not null | администраторы сообщества |
-| followers | ForeignKey(User) | not null | подписчики сообщества |
+| followers | ManyToMany(User) | not null | подписчики сообщества |
 | category | ForeignKey(Category) | not null | категория сообщества |
 | date_created | DATE | not null | дата создания сообщества |
-| is_blocked | BOOLEAN | not null | заблокировано ли сообщество |
 | unblock_date | DATE | - | дата разблокировки сообщества |
 ## Комментарий (Comment)
 |имя поля | тип | ограничения | описание |
