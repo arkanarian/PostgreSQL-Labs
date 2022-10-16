@@ -3,7 +3,7 @@
 
 ## Пользователь (User)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | username | VARCHAR(30) | NOT NULL, UNIQUE | имя пользователя |
 | password | VARCHAR(100) | NOT NULL | пароль |
@@ -12,23 +12,23 @@
 | unblock_date | DATE | - | дата разблокировки пользователя |
 ## Страница Пользователя (Page)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | description | VARCHAR(300) | - | подписчики страницы |
 | owner_id | INT | NOT NULL, UNIQUE, REFERENCES User(id) | пользователь к которому прикреплена эта страница |
 ## Подписчики страницы (Page_followers)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | page_id | INT | NOT NULL, REFERENCES Page(id) | страница на которую подписан пользователь |
 | user_id | INT | NOT NULL, REFERENCES User(id) | пользователь который подписан на страницу |
 ## Запросы на подписку на страницу (Page_follow_requests)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | page_id | INT | NOT NULL, REFERENCES Page(id) | страница на которую подписан пользователь |
 | user_id | INT | NOT NULL, REFERENCES User(id) | пользователь который подписан на страницу |
 ## Записка на странице (Note)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | title | VARCHAR(50) | - | заголовок записки |
 | text | VARCHAR(2000) | - | текст записки |
@@ -39,22 +39,22 @@
 | date_updated | DATE | NOT NULL | дата последнего редактирования записки |
 ## Лайки на записке (Note_likes)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | note_id | INT | NOT NULL, REFERENCES Note(id) | записка |
 | user_id | INT | NOT NULL, REFERENCES User(id) | пользователь который лайкнул |
 ## Тэги записки (Note_tags)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | note_id | INT | NOT NULL, REFERENCES Note(id) | записка |
 | tag_id | INT | NOT NULL, REFERENCES Tag(id) | тэг |
 ## Тег (Tag)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | title | VARCHAR(30) | NOT NULL | название тега |
 ## Сообщество (Community)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | name | VARCHAR(30) | NOT NULL | название сообщества |
 | description | VARCHAR(200) | - | описание сообщества |
@@ -63,22 +63,22 @@
 | unblock_date | DATE | - | дата разблокировки сообщества |
 ## Администраторы сообщества (Community_admins)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | community_id | INT | NOT NULL, REFERENCES Community(id) | сообщество |
 | user_id | INT | NOT NULL, REFERENCES User(id) | администратор |
 ## Подписчики сообщества (Community_followers)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | community_id | INT | NOT NULL, REFERENCES Community(id) | сообщество |
 | user_id | INT | NOT NULL, REFERENCES User(id) | подписчик |
 ## Категория (Category)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | title | VARCHAR(30) | NOT NULL | название категории |
 ## Пост сообщества (Post)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | title | VARCHAR(50) | - | заголовок поста |
 | text | VARCHAR(2000) | - | текст поста |
@@ -89,22 +89,22 @@
 | date_updated | DATE | - | дата последнего редактирования поста |
 ## Лайки на посте (Post_likes)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | post_id | INT | NOT NULL, REFERENCES Post(id) | пост |
 | user_id | INT | NOT NULL, REFERENCES User(id) | пользователь который лайкнул |
 ## Тэги поста (Post_tags)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | post_id | INT | NOT NULL, REFERENCES Post(id) | пост |
 | tag_id | INT | NOT NULL, REFERENCES Tag(id) | тэг |
 ## Пользователи сохранившие пост (Post_saved)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | post_id | INT | NOT NULL, REFERENCES Post(id) | пост |
 | user_id | INT | NOT NULL, REFERENCES User(id) | пользовтель сохранивший пост |
 ## Комментарий (Comment)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | content | VARCHAR(300) | - | текстовый контент поста |
 | document_id | REFERENCES Document(id) | - | ссылка s3 на документ |
@@ -115,28 +115,28 @@
 | date_edited | DATE | - | дата последнего редактирования комента |
 ## Лайки коммента (Comment_likes)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | post_id | INT | NOT NULL, REFERENCES Post(id) | пост |
 | user_id | INT | NOT NULL, REFERENCES User(id) | пользователь поставивший лайк |
 ## Дизлайки коммента (Comment_dislikes)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | post_id | INT | NOT NULL, REFERENCES Post(id) | пост |
 | user_id | INT | NOT NULL, REFERENCES User(id) | пользователь поставивший дизлайк |
 ## Документ (Document)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | document_url | VARCHAR(300) | - | ссылка s3 на документ |
 ## Роли (Roles)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | name | VARCHAR(30) | NOT NULL | название роли |
 | permission | VARCHAR(50) | NOT NULL | право пользователя |
 ## Логи (Logs)
 | field name | type | constraints | description |
-|:---:|:---:|:---:|:---:|
+|:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | user_id | INT | NOT NULL, REFERENCES User(id) | внешний ключ на пользователя |
 | type | VARCHAR(20) | NOT NULL | тип лога(CREATE/UPDATE/DELETE) |
