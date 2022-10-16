@@ -112,10 +112,10 @@ ___
 |:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | content | VARCHAR(300) | - | текстовый контент поста |
-| document_id | REFERENCES Document(id) | - | ссылка s3 на документ |
-| owner_id | NOT NULL, REFERENCES User(id) | - | пользователь который написал коммент |
-| post_id | NOT NULL, REFERENCES User(id) | NOT NULL | пост под которым написан комент |
-| reply_to_id | NOT NULL, REFERENCES Comment(id) | NOT NULL | комент к которому прикреплен данный комент |
+| document_id | INT | REFERENCES Document(id) | ссылка s3 на документ |
+| owner_id | INT | NOT NULL, REFERENCES User(id) | пользователь который написал коммент |
+| post_id | INT | NOT NULL, REFERENCES User(id) | пост под которым написан комент |
+| reply_to_id | INT | NOT NULL, REFERENCES Comment(id) | комент к которому прикреплен данный комент |
 | date_created | DATE | NOT NULL | дата создания коммента |
 | date_edited | DATE | - | дата последнего редактирования комента |
 ## Лайки коммента (Comment_likes)
