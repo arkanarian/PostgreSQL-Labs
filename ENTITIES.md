@@ -1,75 +1,143 @@
 # Описание сущностей
-(имя поля, тип, ограничения, связь с другими сущностями)
+( field name, type, constraints, description с другими сущностями)
 
 ## Пользователь (User)
-|имя поля | тип | ограничения | описание |
+| field name | type | constraints | description |
 |:---:|:---:|:---:|:---:|
-| id | pk | auto increment; not null; unique | первичный ключ |
-| username | VARCHAR(50) | not null; unique | имя пользователя |
-| password | VARCHAR(255) | not null | пароль |
-| email | VARCHAR(100) | blank=True | эл почта |
-| telephone | VARCHAR(10) | blank=True, unique | номер телефона |
+| id | INT | PRIMARY KEY | первичный ключ |
+| username | VARCHAR(30) | NOT NULL, UNIQUE | имя пользователя |
+| password | VARCHAR(100) | NOT NULL | пароль |
+| email | VARCHAR(50) | UNIQUE | эл почта |
+| telephone | VARCHAR(13) | UNIQUE | номер телефона |
 | unblock_date | DATE | - | дата разблокировки пользователя |
 ## Страница Пользователя (Page)
-|имя поля | тип | ограничения | описание |
+| field name | type | constraints | description |
 |:---:|:---:|:---:|:---:|
-| id | pk | auto increment; not null; unique | первичный ключ |
-| owner | OneToOneField(User) | not null | пользователь к которому прикреплена эта страница |
-| followers | ManyToMany(User) | not null | подписчики страницы |
-## Пост (Post)
-|имя поля | тип | ограничения | описание |
+| id | INT | PRIMARY KEY | первичный ключ |
+| description | VARCHAR(300) | - | подписчики страницы |
+| owner_id | INT | NOT NULL, UNIQUE, REFERENCES User(id) | пользователь к которому прикреплена эта страница |
+## Подписчики страницы (Page_followers)
+| field name | type | constraints | description |
 |:---:|:---:|:---:|:---:|
-| id | pk | auto increment; not null; unique | первичный ключ |
-| title | VARCHAR(100) | not null | заголовок поста |
-| likes | ManyToMany(User) | - | пользователи которые лайкнули пост |
-| image_url | VARCHAR(255) | - | ссылка s3 на изображение |
-| tag | ManyToMany(Tag) | not null | тег поста (тематика) |
-| page | ForeignKey(Page) | not null | страница пользователя который создал пост |
-| community | ForeignKey(Community) | not null | сообщество которое создало пост |
-| repost | ForeignKey(Post) | not null | пост который репостит этот пост |
-| date_created | DATE | not null | дата создания поста |
-## Сообщество (Community)
-|имя поля | тип | ограничения | описание |
+| page_id | INT | NOT NULL, REFERENCES Page(id) | страница на которую подписан пользователь |
+| user_id | INT | NOT NULL, REFERENCES User(id) | пользователь который подписан на страницу |
+## Запросы на подписку на страницу (Page_follow_requests)
+| field name | type | constraints | description |
 |:---:|:---:|:---:|:---:|
-| id | pk | auto increment; not null; unique | первичный ключ |
-| name | VARCHAR(50) | not null | название сообщества |
-| admins | ManyToMany(User) | not null | администраторы сообщества |
-| followers | ManyToMany(User) | not null | подписчики сообщества |
-| category | ForeignKey(Category) | not null | категория сообщества |
-| date_created | DATE | not null | дата создания сообщества |
-| unblock_date | DATE | - | дата разблокировки сообщества |
-## Комментарий (Comment)
-|имя поля | тип | ограничения | описание |
+| page_id | INT | NOT NULL, REFERENCES Page(id) | страница на которую подписан пользователь |
+| user_id | INT | NOT NULL, REFERENCES User(id) | пользователь который подписан на страницу |
+## Записка на странице (Note)
+| field name | type | constraints | description |
 |:---:|:---:|:---:|:---:|
-| id | pk | auto increment; not null; unique | первичный ключ |
-| content | VARCHAR(255) | not null | текстовый контент поста |
-| image_url | VARCHAR(255) | - | ссылка s3 на изображение |
-| likes | ForeignKey(User) | - | пользователи которые посчитали коммент ценным |
-| user | ForeignKey(User) | not null | пользователь который написал комент |
-| post | ForeignKey(Post) | not null | пост под которым написан комент |
-| reply_to | ForeignKey(Comment) | - | комент к которому прикреплен данный комент |
-| date_created | DATE | not null | дата создания коммента |
-| date_edited | DATE | - | дата последнего редактирования комента |
+| id | INT | PRIMARY KEY | первичный ключ |
+| title | VARCHAR(50) | - | заголовок записки |
+| text | VARCHAR(2000) | - | текст записки |
+| image_url | VARCHAR(300) | - | ссылка s3 на изображение |
+| page_id | INT | NOT NULL, REFERENCES Page(id) | страница на которой создана записка |
+| reply_to_id | INT | REFERENCES Note(id) | записка который репостит этот записку |
+| date_created | DATE | NOT NULL | дата создания записки |
+| date_updated | DATE | NOT NULL | дата последнего редактирования записки |
+## Лайки на записке (Note_likes)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| note_id | INT | NOT NULL, REFERENCES Note(id) | записка |
+| user_id | INT | NOT NULL, REFERENCES User(id) | пользователь который лайкнул |
+## Тэги записки (Note_tags)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| note_id | INT | NOT NULL, REFERENCES Note(id) | записка |
+| tag_id | INT | NOT NULL, REFERENCES Tag(id) | тэг |
 ## Тег (Tag)
-|имя поля | тип | ограничения | описание |
+| field name | type | constraints | description |
 |:---:|:---:|:---:|:---:|
-| id | pk | auto increment; not null; unique | первичный ключ |
-| title | VARCHAR(100) | not null | название тега |
+| id | INT | PRIMARY KEY | первичный ключ |
+| title | VARCHAR(30) | NOT NULL | название тега |
+## Сообщество (Community)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| id | INT | PRIMARY KEY | первичный ключ |
+| name | VARCHAR(30) | NOT NULL | название сообщества |
+| description | VARCHAR(200) | - | описание сообщества |
+| category_id | INT | REFERENCES Category(id) | название сообщества |
+| date_created | DATE | NOT NULL | дата создания сообщества |
+| unblock_date | DATE | - | дата разблокировки сообщества |
+## Администраторы сообщества (Community_admins)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| community_id | INT | NOT NULL, REFERENCES Community(id) | сообщество |
+| user_id | INT | NOT NULL, REFERENCES User(id) | администратор |
+## Подписчики сообщества (Community_followers)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| community_id | INT | NOT NULL, REFERENCES Community(id) | сообщество |
+| user_id | INT | NOT NULL, REFERENCES User(id) | подписчик |
 ## Категория (Category)
-|имя поля | тип | ограничения | описание |
+| field name | type | constraints | description |
 |:---:|:---:|:---:|:---:|
-| id | pk | auto increment; not null; unique | первичный ключ |
-| title | VARCHAR(100) | not null | название категории |
+| id | INT | PRIMARY KEY | первичный ключ |
+| title | VARCHAR(30) | NOT NULL | название категории |
+## Пост сообщества (Post)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| id | INT | PRIMARY KEY | первичный ключ |
+| title | VARCHAR(50) | - | заголовок поста |
+| text | VARCHAR(2000) | - | текст поста |
+| image_url | VARCHAR(300) | - | ссылка s3 на изображение |
+| community_id | INT | NOT NULL, REFERENCES Community(id) | страница на которой создан пост |
+| reply_to_id | INT | REFERENCES Post(id) | пост который репостит этот пост |
+| date_created | DATE | NOT NULL | дата создания поста |
+| date_updated | DATE | - | дата последнего редактирования поста |
+## Лайки на посте (Post_likes)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| post_id | INT | NOT NULL, REFERENCES Post(id) | пост |
+| user_id | INT | NOT NULL, REFERENCES User(id) | пользователь который лайкнул |
+## Тэги поста (Post_tags)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| post_id | INT | NOT NULL, REFERENCES Post(id) | пост |
+| tag_id | INT | NOT NULL, REFERENCES Tag(id) | тэг |
+## Пользователи сохранившие пост (Post_saved)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| post_id | INT | NOT NULL, REFERENCES Post(id) | пост |
+| user_id | INT | NOT NULL, REFERENCES User(id) | пользовтель сохранивший пост |
+## Комментарий (Comment)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| id | INT | PRIMARY KEY | первичный ключ |
+| content | VARCHAR(300) | - | текстовый контент поста |
+| document_id | REFERENCES Document(id) | - | ссылка s3 на документ |
+| owner_id | NOT NULL, REFERENCES User(id) | - | пользователь который написал коммент |
+| post_id | NOT NULL, REFERENCES User(id) | NOT NULL | пост под которым написан комент |
+| reply_to_id | NOT NULL, REFERENCES Comment(id) | NOT NULL | комент к которому прикреплен данный комент |
+| date_created | DATE | NOT NULL | дата создания коммента |
+| date_edited | DATE | - | дата последнего редактирования комента |
+## Лайки коммента (Comment_likes)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| post_id | INT | NOT NULL, REFERENCES Post(id) | пост |
+| user_id | INT | NOT NULL, REFERENCES User(id) | пользователь поставивший лайк |
+## Дизлайки коммента (Comment_dislikes)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| post_id | INT | NOT NULL, REFERENCES Post(id) | пост |
+| user_id | INT | NOT NULL, REFERENCES User(id) | пользователь поставивший дизлайк |
+## Документ (Document)
+| field name | type | constraints | description |
+|:---:|:---:|:---:|:---:|
+| id | INT | PRIMARY KEY | первичный ключ |
+| document_url | VARCHAR(300) | - | ссылка s3 на документ |
 ## Роли (Roles)
-|имя поля | тип | ограничения | описание |
+| field name | type | constraints | description |
 |:---:|:---:|:---:|:---:|
-| id | pk | auto increment; not null; unique | первичный ключ |
-| name | VARCHAR(50) | not null | название роли |
-| permission | VARCHAR(128) | not null | право пользователя |
+| id | INT | PRIMARY KEY | первичный ключ |
+| name | VARCHAR(30) | NOT NULL | название роли |
+| permission | VARCHAR(50) | NOT NULL | право пользователя |
 ## Логи (Logs)
-|имя поля | тип | ограничения | описание |
+| field name | type | constraints | description |
 |:---:|:---:|:---:|:---:|
-| id | pk | auto increment; not null; unique | первичный ключ |
-| user | ForeignKey(User) | not null | внешний ключ на пользователя |
-| type | VARCHAR(50) | not null | тип лога(CREATE/UPDATE/DELETE) |
-| representation | VARCHAR(255) | not null | строковое представление изменённого кортежа |
+| id | INT | PRIMARY KEY | первичный ключ |
+| user_id | INT | NOT NULL, REFERENCES User(id) | внешний ключ на пользователя |
+| type | VARCHAR(20) | NOT NULL | тип лога(CREATE/UPDATE/DELETE) |
+| message | VARCHAR(300) | NOT NULL | сообщение характеризующее лог |
