@@ -10,6 +10,7 @@
 | email | VARCHAR(50) | UNIQUE | эл почта |
 | telephone | VARCHAR(13) | UNIQUE | номер телефона |
 | unblock_date | DATE | - | дата разблокировки пользователя |
+___
 ## Страница Пользователя (Page)
 | field name | type | constraints | description |
 |:---:|:---:|:---|:---|
@@ -26,6 +27,7 @@
 |:---:|:---:|:---|:---|
 | page_id | INT | NOT NULL, REFERENCES Page(id) | страница на которую подписан пользователь |
 | user_id | INT | NOT NULL, REFERENCES User(id) | пользователь который подписан на страницу |
+___
 ## Записка на странице (Note)
 | field name | type | constraints | description |
 |:---:|:---:|:---|:---|
@@ -52,6 +54,7 @@
 |:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | title | VARCHAR(30) | NOT NULL | название тега |
+___
 ## Сообщество (Community)
 | field name | type | constraints | description |
 |:---:|:---:|:---|:---|
@@ -76,6 +79,7 @@
 |:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | title | VARCHAR(30) | NOT NULL | название категории |
+___
 ## Пост сообщества (Post)
 | field name | type | constraints | description |
 |:---:|:---:|:---|:---|
@@ -102,6 +106,7 @@
 |:---:|:---:|:---|:---|
 | post_id | INT | NOT NULL, REFERENCES Post(id) | пост |
 | user_id | INT | NOT NULL, REFERENCES User(id) | пользовтель сохранивший пост |
+___
 ## Комментарий (Comment)
 | field name | type | constraints | description |
 |:---:|:---:|:---|:---|
@@ -128,12 +133,14 @@
 |:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | document_url | VARCHAR(300) | - | ссылка s3 на документ |
+___
 ## Роли (Roles)
 | field name | type | constraints | description |
 |:---:|:---:|:---|:---|
 | id | INT | PRIMARY KEY | первичный ключ |
 | name | VARCHAR(30) | NOT NULL | название роли |
 | permission | VARCHAR(50) | NOT NULL | право пользователя |
+___
 ## Логи (Logs)
 | field name | type | constraints | description |
 |:---:|:---:|:---|:---|
