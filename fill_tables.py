@@ -20,6 +20,199 @@ def fill(connection, tablename=[]):
     if ("posts" in tablename): fill_posts(connection)
     if ("comments" in tablename): fill_comments(connection)
 
+def add_mtom(tablename, ind_1, ind_2):
+    pass
+
+def fill_one_mtom(connection):
+    with connection.cursor() as cursor:
+        cursor.execute("select count(*) from communities;")
+        communities_amount = cursor.fetchall()[0][0]
+        cursor.execute("select count(*) from comments;")
+        comments_amount = cursor.fetchall()[0][0]
+        cursor.execute("select count(*) from posts;")
+        posts_amount = cursor.fetchall()[0][0]
+        cursor.execute("select count(*) from users;")
+        users_amount = cursor.fetchall()[0][0]
+        cursor.execute("select count(*) from pages;")
+        pages_amount = cursor.fetchall()[0][0]
+        cursor.execute("select count(*) from tags;")
+        tags_amount = cursor.fetchall()[0][0]
+        
+        # post_likes
+        cursor.execute("BEGIN;")
+        for _ in range(1, 3):
+            print(_)
+            cursor.execute("""
+                INSERT INTO post_likes (post_id, user_id) VALUES (
+                    %(post_id)s,
+                    %(user_id)s
+                );
+            """, {
+                'post_id': random.randint(1,posts_amount),
+                'user_id': random.randint(1,users_amount)
+            })
+        cursor.execute("COMMIT;")
+        print("Table 'post_likes' has been filled")
+
+
+def fill_mtom_default(connection):
+    with connection.cursor() as cursor:
+        cursor.execute("select count(*) from communities;")
+        communities_amount = cursor.fetchall()[0][0]
+        cursor.execute("select count(*) from comments;")
+        comments_amount = cursor.fetchall()[0][0]
+        cursor.execute("select count(*) from posts;")
+        posts_amount = cursor.fetchall()[0][0]
+        cursor.execute("select count(*) from users;")
+        users_amount = cursor.fetchall()[0][0]
+        cursor.execute("select count(*) from pages;")
+        pages_amount = cursor.fetchall()[0][0]
+        cursor.execute("select count(*) from tags;")
+        tags_amount = cursor.fetchall()[0][0]
+
+        # community_posts
+        cursor.execute("BEGIN;")
+        for _ in range(1, posts_amount):
+            print(_)
+            cursor.execute("""
+                INSERT INTO community_posts (community_id, post_id) VALUES (
+                    %(community_id)s,
+                    %(post_id)s
+                );
+            """, {
+                'community_id': random.randint(1,communities_amount),
+                'post_id': _
+            })
+        cursor.execute("COMMIT;")
+        print("Table 'community_posts' has been filled")
+
+        # page_posts
+        cursor.execute("BEGIN;")
+        for _ in range(1, posts_amount):
+            print(_)
+            cursor.execute("""
+                INSERT INTO page_posts (page_id, post_id) VALUES (
+                    %(page_id)s,
+                    %(post_id)s
+                );
+            """, {
+                'page_id': random.randint(1,pages_amount),
+                'post_id': _
+            })
+        cursor.execute("COMMIT;")
+        print("Table 'page_posts' has been filled")
+
+        # page_followers
+        cursor.execute("BEGIN;")
+        for _ in range(1, pages_amount):
+            print(_)
+            cursor.execute("""
+                INSERT INTO page_followers (page_id, user_id) VALUES (
+                    %(page_id)s,
+                    %(user_id)s
+                );
+            """, {
+                'page_id': random.randint(1,pages_amount),
+                'user_id': random.randint(1,users_amount)
+            })
+        cursor.execute("COMMIT;")
+        print("Table 'page_followers' has been filled")
+
+        # community_followers
+        cursor.execute("BEGIN;")
+        for _ in range(1, communities_amount):
+            print(_)
+            cursor.execute("""
+                INSERT INTO community_followers (community_id, user_id) VALUES (
+                    %(community_id)s,
+                    %(user_id)s
+                );
+            """, {
+                'community_id': random.randint(1,communities_amount),
+                'user_id': random.randint(1,users_amount)
+            })
+        cursor.execute("COMMIT;")
+        print("Table 'community_followers' has been filled")
+
+        # def fill_one_table(table_name, inserts_amount, ind1, ind2):
+        #     cursor.execute("BEGIN;")
+        #     for _ in range(comments_amount*3):
+        #         cursor.execute("""
+        #             INSERT INTO page_posts (community_id, user_id) VALUES (
+        #                 %(community_id)s,
+        #                 %(user_id)s
+        #             );
+        #         """, {
+        #             'community_id': random.randint(1,communities_amount),
+        #             'user_id': random.randint(1,users_amount)
+        #         })
+        #     cursor.execute("COMMIT;")
+        #     print("Table 'community_followers' has been filled")
+
+        # community_admins
+        cursor.execute("BEGIN;")
+        for _ in range(1, 1, communities_amount):
+            print(_)
+            cursor.execute("""
+                INSERT INTO community_admins (community_id, user_id) VALUES (
+                    %(community_id)s,
+                    %(user_id)s
+                );
+            """, {
+                'community_id': _,
+                'user_id': random.randint(1,users_amount)
+            })
+        cursor.execute("COMMIT;")
+        print("Table 'community_admins' has been filled")
+
+        # post_likes
+        cursor.execute("BEGIN;")
+        for _ in range(1, posts_amount):
+            print(_)
+            cursor.execute("""
+                INSERT INTO post_likes (post_id, user_id) VALUES (
+                    %(post_id)s,
+                    %(user_id)s
+                );
+            """, {
+                'post_id': random.randint(1,posts_amount),
+                'user_id': random.randint(1,users_amount)
+            })
+        cursor.execute("COMMIT;")
+        print("Table 'post_likes' has been filled")
+
+        # post_tags
+        cursor.execute("BEGIN;")
+        for _ in range(1, posts_amount):
+            print(_)
+            cursor.execute("""
+                INSERT INTO post_tags (post_id, tag_id) VALUES (
+                    %(post_id)s,
+                    %(tag_id)s
+                );
+            """, {
+                'post_id': _,
+                'tag_id': random.randint(1,tags_amount)
+            })
+        cursor.execute("COMMIT;")
+        print("Table 'post_tags' has been filled")
+
+        # comment_likes
+        cursor.execute("BEGIN;")
+        for _ in range(1, comments_amount):
+            print(_)
+            cursor.execute("""
+                INSERT INTO comment_likes (comment_id, user_id) VALUES (
+                    %(comment_id)s,
+                    %(user_id)s
+                );
+            """, {
+                'comment_id': _,
+                'user_id': random.randint(1,users_amount)
+            })
+        cursor.execute("COMMIT;")
+        print("Table 'comment_likes' has been filled")
+
 
 def fill_comments(connection):
     with connection.cursor() as cursor:
@@ -136,7 +329,7 @@ def fill_pages(connection):
 def fill_users(connection):
     with connection.cursor() as cursor:
         cursor.execute("BEGIN;")
-        for _ in range(5):
+        for _ in range(3):
             fname = fake.first_name()
             lname = fake.last_name()
             cursor.execute("""
