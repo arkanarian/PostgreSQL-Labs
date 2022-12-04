@@ -1,0 +1,47 @@
+version: '3.3'
+
+services:
+  # database
+  postgres:
+    container_name: postgres_roddit
+    image: postgres:12-alpine
+    restart: always
+    environment:
+      POSTGRES_HOST: localhost
+      POSTGRES_DB: roddit_db_docker
+      POSTGRES_USER: roddit_uder
+      POSTGRES_PASSWORD: trailking201
+    ports:
+      - '30001:5432'
+    networks:
+      - postgres
+    volumes:
+      - db:/var/lib/postgresql/data
+
+
+  pgadmin:
+    container_name: pgadmin_roddit
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: max1112vas@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: trailking201
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+  db:
+    driver: local
+  pgadmin:
+    driver: local
+
+    
