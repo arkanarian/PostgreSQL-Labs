@@ -92,6 +92,31 @@ begin
 end;
 $$ language plpgsql;
 
+
+-- PROCEDURES
+-- при создании post должен быть создан в каокйто community (fill community_posts)
+CREATE OR REPLACE PROCEDURE new_post_community(
+	_title VARCHAR(100),
+	_text VARCHAR(5000),
+	_community_id int
+)    
+as $$
+declare
+	_post_id int := -1;
+begin
+	with rows as (
+		insert into posts(title, text)
+		values (_title, _text)
+		returning post_id
+	)
+	select post_id
+	into _post_id
+	from rows;
+	insert into community_posts(community_id, post_id)
+	values (_community_id, _post_id);
+end;
+$$ language plpgsql;
+
 -- количетсов подписчиков у всех community
 CREATE OR REPLACE FUNCTION followers_community_amount()
 	RETURNS TABLE ( community_id int,
