@@ -7,7 +7,7 @@
 
 **Used functionalities**: Transactions, Procedures, Functions, Triggers, Joins, Unions, Subqueries, Advanced SQL queries
 
-## Labaratory work 1:
+## Labaratory work 1
 In this laboratory work, it is necessary to:
 1. Determine the topic of the project being developed in the semester.
 2. Define the functional requirements for the project.
@@ -17,13 +17,13 @@ In this laboratory work, it is necessary to:
 6. Schematically depict a non-normalized database schema.
 7. Describe each entity (field name, type, constraints, relationship to other entities)
 
-## Labaratory work 2:
+## Labaratory work 2
 In this laboratory work it is necessary:
 1. To develop a datalogical model approved in the first laboratory database.
 2. Bring the database to the third normal form.
 3. If it is necessary to denormalize the database, be ready to prove your point of view.
 
-## Labaratory work 3:
+## Labaratory work 3
 In this laboratory work, it is necessary to:
 1. Develop a physical database model (create a database on your device).
 2. Impose restrictions on the database.
@@ -40,7 +40,7 @@ Acceptance Criteria:
 - Willingness to demonstrate working with the simplest (and slightly complicated) SQL queries on an existing database.
 - Willingness to explain the meaning of all SQL statements used in the code + operators for the simplest sampling and filtering.
 
-## Labaratory work 4:
+## Labaratory work 4
 In this laboratory work, it is necessary:
 1. Create a pool of queries for a complex selection from the database.
 2. Create a pool of queries to get views in the database.
@@ -68,7 +68,7 @@ d. EXPLAIN
 - Willingness to explain the meaning of all SQL statements used in the code + operators listed above + willingness to write the code of any operator from the laboratory for your data.
 - Theoretical knowledge on queries and operators.
 
-## Labaratory work 5:
+## Labaratory work 5
 In this laboratory work, it is necessary:
 1. Create a pool of triggers necessary for the correct operation of your database logic.
 2. Create a pool of stored procedures necessary for the correct operation of your database.
@@ -86,7 +86,7 @@ b. Procedures should be stored in the database and called from other queries or 
 - Ability to implement new triggers and procedures
 - Theoretical knowledge in the context of laboratory
 
-## Labaratory work 6:
+## Labaratory work 6
 In this laboratory work, it is necessary:
 1. Create an application with a user interface in which the database developed during the semester acts as the main database of the project.
 
