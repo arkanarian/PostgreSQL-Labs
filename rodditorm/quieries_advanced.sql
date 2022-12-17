@@ -85,7 +85,7 @@ SELECT
 	com.date_created,
 	cat.title as category_name
 FROM communities AS com
-INNER JOIN categories AS cat USING (category_id)
+INNER JOIN categories AS cat USING (category_id);
 
 -- WHERE IN
 -- выбирает communities у которых название категории одно из нескольких значений
@@ -136,6 +136,7 @@ FROM (
 
 
 -- CASE
+-- выписывает какие самый популярные категории, какие средние, какие неинтересные
 SELECT 
 	cat.category_id,
 	cat.title,
@@ -155,5 +156,3 @@ INNER JOIN (
 	GROUP BY cat.category_id
 ) pop USING (category_id)
 ORDER BY pop.com_amount DESC;
-
-

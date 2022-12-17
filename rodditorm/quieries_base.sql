@@ -12,6 +12,8 @@ ALTER TABLE communities ALTER COLUMN date_created SET NOT NULL;
 ALTER TABLE posts ADD COLUMN likes int NOT NULL DEFAULT 0;
 ALTER FUNCTION RENAME trigger_function TO add_likes_post_func;
 
+SELECT
+	count(*) > 0 IF 'above' : 'down zero' AS some_col
 
 -- INSERT
 -- добавление поста в mtom таблицу, с условием что этот пост 

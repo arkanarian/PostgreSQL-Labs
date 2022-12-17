@@ -1,15 +1,15 @@
 import psycopg2
-import fill_tables
+from . import fill_tables
 
-connection = psycopg2.connect(host='localhost', port='30001', database='roddit_db_docker', user='roddit_user', password='trailking201')
+# connection = psycopg2.connect(host='localhost', port='30001', database='roddit_db_docker', user='roddit_user', password='trailking201')
 
-cursor = connection.cursor()
+# cursor = connection.cursor()
 
 # how to connect to the psql inside containter:
 # psql -U roddit_user -d roddit_db_docker
 
 
-def _recreate():
+def recreate(cursor):
     cursor.execute("BEGIN;")
 
     # roles
@@ -230,7 +230,7 @@ def _recreate():
     cursor.execute("COMMIT;")
     print("All tables has been created")
 
-def _create_indexes():
+def create_indexes(cursor):
     cursor.execute("BEGIN;")
     cursor.execute("""
         CREATE INDEX index_posts_date_created
@@ -297,7 +297,7 @@ def _create_indexes():
     )
     cursor.execute("COMMIT;")
 
-def _drop_indexes():
+def drop_indexes(cursor):
     cursor.execute("BEGIN;")
     cursor.execute("DROP INDEX index_posts_date_created")
     cursor.execute("DROP INDEX index_users_username")
@@ -313,7 +313,7 @@ def _drop_indexes():
     cursor.execute("DROP INDEX index_page_post")
     cursor.execute("COMMIT;")
     
-def _drop_tables():
+def drop_tables(cursor):
     cursor.execute("BEGIN;")
 
     # drop table
@@ -341,11 +341,179 @@ def _drop_tables():
     cursor.execute("COMMIT;")
     print("15 tables has been successfully dropped")
 
-def _fill_all_tables():
+def create_triggers(connection):
+    cursor.execute("BEGIN;")
+
+    # TRIGGER new like
+    # увеличивать количество лайков при добавлении нового лайка в mtom
+    cursor.execute("""
+        CREATE OR REPLACE FUNCTION add_like_post_func()
+        RETURNS trigger
+        AS $$
+        begin
+            UPDATE posts
+            likes = likes + 1
+            WHERE post_id = new.post_id;
+            RETURN NEW;
+        end;
+        $$ LANGUAGE plpgsql;
+    """)
+    cursor.execute("""
+        CREATE TRIGGER trigger_new_like
+        AFTER INSERT
+        ON post_likes
+        FOR EACH ROW
+        EXECUTE PROCEDURE add_like_post_func();
+    """)
+
+    # TRIGGER undo like
+    # уменьшать количество лайков при удалении лайка из mtom
+    cursor.execute("""
+        CREATE OR REPLACE FUNCTION undo_like_post_func()
+            RETURNS trigger
+        AS $$
+        begin
+            UPDATE posts
+            likes = likes - 1
+            WHERE post_id = old.post_id;
+            RETURN NEW;
+        end;
+        $$ LANGUAGE plpgsql;
+    """)
+    cursor.execute("""
+        CREATE TRIGGER trigger_undo_like
+        AFTER DELETE
+        ON post_likes
+        FOR EACH ROW
+        EXECUTE PROCEDURE undo_like_post_func();
+    """)
+
+    # TRIGGER logging new user
+    cursor.execute("""
+        CREATE OR REPLACE FUNCTION logs_new_user_func()
+            RETURNS trigger
+        AS $$
+        begin
+            INSERT INTO logs(type, message) 
+            VALUES ('INFO', 'New user user_id(' || new.user_id || ') "' || new.username || '" was created.');
+            RETURN NEW;
+        end;
+        $$ LANGUAGE plpgsql;
+    """)
+    cursor.execute("""
+        CREATE OR REPLACE TRIGGER trigger_logs_new_user
+        AFTER INSERT
+        ON users
+        FOR EACH ROW
+        EXECUTE PROCEDURE logs_new_user_func();
+    """)
+    cursor.execute("COMMIT;")
+    print("3 triggers has been created")
+
+def create_functions(connection):
+    cursor.execute("BEGIN;")
+    # PROCEDURES
+    # при создании community должен быть прикриплен хотябы один админ
+    cursor.execute("""
+        CREATE OR REPLACE PROCEDURE new_community(
+            _name VARCHAR(30),
+            _description VARCHAR(200),
+            _category_id int,
+            _admin_id int
+        )    
+        as $$
+        declare
+            _community_id int := -1;
+        begin
+            with rows as (
+                insert into communities(name, description, category_id)
+                values (_name, _description, _category_id)
+                returning *
+            )
+            SELECT community_id
+            INTO _community_id
+            FROM rows;
+            -- add admin of community
+            insert into community_admins(community_id, user_id)
+            values (_community_id, _admin_id);
+
+            commit;
+        end;
+        $$ language plpgsql;
+    """)
+    
+    # FUNCTION
+    # количетсов подписчиков у всех community
+    cursor.execute("""
+        CREATE OR REPLACE FUNCTION followers_community_amount()
+            RETURNS TABLE ( community_id int,
+                            followers bigint)
+            LANGUAGE plpgsql AS
+        $func$
+        BEGIN
+            RETURN QUERY
+            SELECT c.community_id,
+                COUNT(cf.user_id) AS followers
+            FROM communities AS c
+            INNER JOIN community_followers AS cf USING (community_id)
+            GROUP BY c.community_id;
+        END
+        $func$;
+    """)
+    
+    # FUNCTION
+    # количетсов подписчиков у одной community
+    cursor.execute("""
+        CREATE OR REPLACE FUNCTION followers_community_amount(_community_id int)
+            RETURNS TABLE ( community_id int,
+                            followers bigint)
+            LANGUAGE plpgsql AS
+        $func$
+        BEGIN
+            RETURN QUERY
+            SELECT c.community_id,
+                COUNT(cf.user_id) AS followers
+            FROM communities AS c
+            INNER JOIN community_followers AS cf USING (community_id)
+            WHERE cf.community_id = _community_id
+            GROUP BY c.community_id;
+        END
+        $func$;
+    """)
+    
+    cursor.execute("COMMIT;")
+
+def fill_all_tables(connection):
     fill_tables.fill(connection, ['roles', 'users', 'tags', 'categories', 'pages', 'communities', 'posts', 'comments'])
 
-def _fill_one_table(tablename):
-    fill_tables.fill(connection, [tablename,])
+def fill_one_table(cursor, tablename, **kwargs):
+    k = ', '.join(map(str,kwargs.keys()))
+    v = '\', \''.join(map(str,kwargs.values()))
+    cursor.execute(f"""INSERT INTO {tablename} ({k}) VALUES ('{v}');""")
+    result = f"Table '{tablename}' has been filled"
+    return result
+
+def remove_row(cursor, tablename, **kwargs):
+    k = list(kwargs.keys())
+    v = list(kwargs.values())
+    cursor.execute(f"""DELETE FROM {tablename} WHERE {k[0]} = {v[0]};""")
+    result = f"Row ({k[0]}, {v[0]}) has been removed from '{tablename}'"
+    return result
+
+def update_row(cursor, tablename, **kwargs):
+    k = list(kwargs.keys())
+    v = list(kwargs.values())
+    cursor.execute(f"""UPDATE {tablename} SET {k[1]} = '{v[1]}', {k[2]} = '{v[2]}',{k[3]} = '{v[3]}' WHERE {k[0]} = '{v[0]}';""")
+    result = f"Row ({k[0]}, {v[0]}) has been updated in '{tablename}'"
+    return result
+
+
+def fill_one_table_proced(cursor, tablename, mtomtable="", **kwargs):
+    v = '\', \''.join(map(str,kwargs.values()))
+    if (mtomtable == 'community_posts'): 
+        cursor.execute(f"call new_post_community('{v}');")
+    result = f"Table '{tablename}' has been filled"
+    return result
 
 
 def _select_table(tablename):
@@ -371,12 +539,12 @@ def _fill_one_mtom():
     
 
 def main(drop_all, create, create_indexes, drop_indexes, fill_all_tables, fill_one_table, select_table, add_mtom, fill_mtom_default, fill_one_mtom):
-    if (drop_all): _drop_tables()
-    if (create): _recreate()
-    if (create_indexes): _create_indexes()
-    if (drop_indexes): _drop_indexes()
-    if (fill_all_tables): _fill_all_tables()
-    if (fill_one_table): _fill_one_table(fill_one_table)
+    if (drop_all): drop_tables()
+    if (create): recreate()
+    if (create_indexes): create_indexes()
+    if (drop_indexes): drop_indexes()
+    if (fill_all_tables): fill_all_tables()
+    if (fill_one_table): fill_one_table(fill_one_table)
     if (select_table): _select_table(select_table)
     if (add_mtom): _add_mtom(add_mtom)
     if (fill_mtom_default): _fill_mtom_default()
