@@ -1,11 +1,10 @@
 # Roddit
- Vasilevich Maksim | 053504
 
 **Theme of database**: social media (analogy of Rediit)
 
 **Technology**: PostgreSQL, Python, FastAPI
 
-**Used functionalities**: Transactions, Procedures, Functions, Triggers, Joins, Unions, Subqueries, Advanced SQL queries
+**Used functionality**: Transactions, Procedures, Functions, Triggers, Joins, Unions, Subqueries, Advanced SQL queries
 
 ## Labaratory work 1
 In this laboratory work, it is necessary to:
